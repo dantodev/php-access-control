@@ -1,0 +1,21 @@
+{
+  "name": "dtkahl/php-access-control",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.6",
+    "dtkahl/php-simple-config": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "5.2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Dtkahl\\AccessControl\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Dtkahl\\AccessControlTests\\": "tests/"
+    }
+  }
+}
