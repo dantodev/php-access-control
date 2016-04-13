@@ -90,6 +90,12 @@ class Judge
     throw new \RuntimeException("Given object is not configured for judge.");
   }
 
+  /**
+   * @param array $rights
+   * @param Config $config
+   * @param $path
+   * @return bool
+   */
   private function checkRightsInConfig(array $rights, Config $config, $path)
   {
     return $config->has($path) && empty(array_diff($rights, $config->get($path)));
