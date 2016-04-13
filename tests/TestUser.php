@@ -6,9 +6,16 @@ use Dtkahl\AccessControl\UserInterface;
 class TestUser implements UserInterface
 {
 
+  private $global_roles = [];
+
+  public function __construct(array $global_roles)
+  {
+    $this->global_roles = $global_roles;
+  }
+
   public function getGlobalRoles()
   {
-    return ["member"];
+    return $this->global_roles;
   }
 
 }

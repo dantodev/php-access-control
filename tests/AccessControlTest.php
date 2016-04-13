@@ -12,7 +12,7 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
 
   public function setUp()
   {
-    $user = new TestUser();
+    $user = new TestUser(["member"]);
 
     $config = [
         "objects" => [
@@ -53,9 +53,15 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
 
   public function test()
   {
-    var_dump($this->judge->hasRight("write", new TestBlog()));
-    var_dump($this->judge->hasRight("write", new TestComment()));
-    var_dump($this->judge->hasRight("remove", new TestComment()));
+    $blog = new TestBlog(["author"], []);
+    $comment = new TestComment([], [$blog]);
+
+    $this->assertTrue($this->judge->hasRight("write", $blog));
+    $this->assertTrue($this->judge->hasRight("write", $comment));
+    $this->assertTrue($this->judge->hasRight("remove", $comment));
+    $this->assertFalse($this->judge->hasRight("destroy", $blog));
+    $this->assertFalse($this->judge->hasRight("destroy", $comment));
+    $this->assertFalse($this->judge->hasRight("destroy", $comment));
   }
 
 }

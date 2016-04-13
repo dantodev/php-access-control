@@ -6,14 +6,23 @@ use Dtkahl\AccessControl\UserInterface;
 class TestComment implements ObjectInterface
 {
 
+  private $object_roles = [];
+  private $related_object = [];
+
+  public function __construct(array $object_roles, array $related_object)
+  {
+    $this->object_roles = $object_roles;
+    $this->related_object = $related_object;
+  }
+
   public function getObjectRoles(UserInterface $user)
   {
-    return [];
+    return $this->object_roles;
   }
 
   public function getRelatedObjects()
   {
-    return [new TestBlog()];
+    return $this->related_object;
   }
 
 }
