@@ -44,7 +44,7 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
             ]
         ],
         "global" => [
-          "member" => []
+          "member" => ["view", "test"]
         ],
     ];
 
@@ -56,9 +56,12 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
     $blog = new TestBlog(["author"], []);
     $comment = new TestComment([], [$blog]);
 
+    $this->assertTrue($this->judge->hasRight("view"));
     $this->assertTrue($this->judge->hasRight("write", $blog));
     $this->assertTrue($this->judge->hasRight("write", $comment));
     $this->assertTrue($this->judge->hasRight("remove", $comment));
+    $this->assertTrue($this->judge->hasRight(["view", "test"]));
+    $this->assertFalse($this->judge->hasRight("destroy"));
     $this->assertFalse($this->judge->hasRight("destroy", $blog));
     $this->assertFalse($this->judge->hasRight("destroy", $comment));
     $this->assertFalse($this->judge->hasRight("destroy", $comment));
