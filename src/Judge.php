@@ -29,39 +29,50 @@ class Judge
   {
     $rights = (array) $rights;
     $user = $user ?: $this->_user;
+    $global_roles = $user->getGlobalRoles();
 
     // check global rights
-    foreach ($user->getGlobalRoles() as $role) {
-      if ($this->_config->has("global.$role")) {
-        if ($this->checkRightsInConfig($rights, $this->_config, "global.$role")) {
+    foreach ($global_roles as $role) {
+      if ($this->_config->has("global.$role.rights")) {
+        if ($this->checkRightsInConfig($rights, $this->_config, "global.$role.rights")) {
           return true;
         }
       }
     }
 
-    // TODO check global related
+    if ($object === null) {
+      return false;
+    }
 
-    if ($object !== null) {
-      $object_config = $this->getObjectConfig($object);
-      $object_identifier = $object_config->get("identifier");
+    $object_config = $this->getObjectConfig($object);
+    $object_identifier = $object_config->get("identifier");
 
-      // check object rights
-      foreach ($object->getObjectRoles($user) as $role) {
-        if ($this->checkRightsInConfig($rights, $object_config, "roles.$role.rights")) {
+    // check global rights
+    foreach ($global_roles as $role) {
+      if ($this->_config->has("global.$role.related_rights.$object_identifier")) {
+        if ($this->checkRightsInConfig($rights, $this->_config, "global.$role.related_rights.$object_identifier")) {
           return true;
         }
       }
+    }
 
-      // check object relation rights
-      foreach ($object->getRelatedObjects() as $related) {
-        $related_config = $this->getObjectConfig($related);
-        foreach ($related->getObjectRoles($user) as $role) {
-          if ($this->checkRightsInConfig($rights, $related_config, "roles.$role.related_rights.$object_identifier")) {
-            return true;
-          }
+    // check object rights
+    foreach ($object->getObjectRoles($user) as $role) {
+      if ($this->checkRightsInConfig($rights, $object_config, "roles.$role.rights")) {
+        return true;
+      }
+    }
+
+    // check object related rights
+    foreach ($object->getRelatedObjects() as $related) {
+      $related_config = $this->getObjectConfig($related);
+      foreach ($related->getObjectRoles($user) as $role) {
+        if ($this->checkRightsInConfig($rights, $related_config, "roles.$role.related_rights.$object_identifier")) {
+          return true;
         }
       }
     }
+
     return false;
   }
 
