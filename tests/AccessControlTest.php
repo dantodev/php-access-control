@@ -72,6 +72,11 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
     $this->assertFalse($this->judge->hasRight("destroy", $blog)); // negative object right
     $this->assertFalse($this->judge->hasRight("destroy", $comment)); // negative related object right
     $this->assertFalse($this->judge->hasRight("destroy", $comment)); // negative related object right
+
+    $this->assertTrue($this->judge->hasRole("member"));
+    $this->assertTrue($this->judge->hasRole("author", $blog));
+    $this->assertFalse($this->judge->hasRole("admin"));
+    $this->assertFalse($this->judge->hasRole("creator", $comment));
   }
 
 }
