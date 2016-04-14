@@ -30,8 +30,6 @@ class Judge
     $user = $user ?: $this->_user;
     $global_roles = $user->getGlobalRoles();
 
-    // TODO caching
-
     // check global rights
     foreach ($global_roles as $role) {
       if ($this->_config->has("global.$role.rights")) {
