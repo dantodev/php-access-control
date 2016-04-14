@@ -23,7 +23,7 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
                         "rights" => ["write"],
                         "related_rights" => [
                             "comment" => ["write", "remove"]
-                        ],
+                        ]
                     ],
                     "subscriber" => [
                         "rights" => [],
@@ -44,8 +44,13 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
             ]
         ],
         "global" => [
-          "member" => ["view", "test"]
-        ],
+            "member" => [
+                "rights" => ["access", "test"],
+                "related_rights" => [
+                  "blog" => ["view"]
+                ]
+            ]
+        ]
     ];
 
     $this->judge = new Judge($config, $user);
@@ -56,17 +61,17 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
     $blog = new TestBlog(["author"], []);
     $comment = new TestComment([], [$blog]);
 
-    $this->assertTrue($this->judge->hasRight("view")); // positive global right
-    $this->assertTrue($this->judge->hasRight(["view", "test"])); // positive multiple rights
+    $this->assertTrue($this->judge->hasRight("access")); // positive global right
+    $this->assertTrue($this->judge->hasRight(["access", "test"])); // positive multiple rights
     $this->assertTrue($this->judge->hasRight("write", $blog)); // positive object right
+    $this->assertTrue($this->judge->hasRight("view", $blog)); // positive object related right
     $this->assertTrue($this->judge->hasRight("write", $comment)); // positive related object right
     $this->assertTrue($this->judge->hasRight("remove", $comment)); // positive related object right
     $this->assertFalse($this->judge->hasRight("destroy")); // negative global right
-    $this->assertFalse($this->judge->hasRight(["view", "destroy"])); // negative multiple rights
+    $this->assertFalse($this->judge->hasRight(["access", "destroy"])); // negative multiple rights
     $this->assertFalse($this->judge->hasRight("destroy", $blog)); // negative object right
     $this->assertFalse($this->judge->hasRight("destroy", $comment)); // negative related object right
     $this->assertFalse($this->judge->hasRight("destroy", $comment)); // negative related object right
-    // TODO global related right
   }
 
 }
