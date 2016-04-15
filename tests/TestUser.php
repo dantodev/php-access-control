@@ -1,9 +1,9 @@
 <?php namespace Dtkahl\AccessControlTests;
 
 use Dtkahl\AccessControl\AccessControlTrait;
-use Dtkahl\AccessControl\UserInterface;
+use Dtkahl\AccessControl\UserAccessInterface;
 
-class TestUser implements UserInterface
+class TestUser implements UserAccessInterface
 {
 
   private $global_roles = [];

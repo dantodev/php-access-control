@@ -1,7 +1,7 @@
 <?php namespace Dtkahl\AccessControlTests;
 
 use Dtkahl\AccessControl\ObjectInterface;
-use Dtkahl\AccessControl\UserInterface;
+use Dtkahl\AccessControl\UserAccessInterface;
 
 class TestBlog implements ObjectInterface
 {
@@ -15,7 +15,7 @@ class TestBlog implements ObjectInterface
     $this->related_object = $related_object;
   }
 
-  public function getObjectRoles(UserInterface $user)
+  public function getObjectRoles(UserAccessInterface $user)
   {
     return $this->object_roles;
   }

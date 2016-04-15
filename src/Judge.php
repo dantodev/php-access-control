@@ -10,9 +10,9 @@ class Judge
 
   /**
    * @param array|Config $config
-   * @param UserInterface|null $user
+   * @param UserAccessInterface|null $user
    */
-  public function __construct($config, UserInterface $user)
+  public function __construct($config, UserAccessInterface $user)
   {
     $this->_config = $config instanceof Config ? $config : new Config($config);
     $this->_user = $user;
@@ -21,10 +21,10 @@ class Judge
   /**
    * @param string|string[] $rights
    * @param ObjectInterface|null $object
-   * @param UserInterface|null $user
+   * @param UserAccessInterface|null $user
    * @return bool
    */
-  public function hasRight($rights, ObjectInterface $object = null, UserInterface $user = null)
+  public function hasRight($rights, ObjectInterface $object = null, UserAccessInterface $user = null)
   {
     $rights = (array) $rights;
     $user = $user ?: $this->_user;
@@ -76,10 +76,10 @@ class Judge
   /**
    * @param string $role
    * @param ObjectInterface|null $object
-   * @param UserInterface|null $user
+   * @param UserAccessInterface|null $user
    * @return bool
    */
-  public function hasRole($role, ObjectInterface $object = null, UserInterface $user = null)
+  public function hasRole($role, ObjectInterface $object = null, UserAccessInterface $user = null)
   {
     $user = $user ?: $this->_user;
     return in_array($role, $object == null ? $user->getGlobalRoles() : $object->getObjectRoles($user));
@@ -108,6 +108,14 @@ class Judge
   private function checkRightsInConfig(array $rights, Config $config, $path)
   {
     return $config->has($path) && empty(array_diff($rights, $config->get($path)));
+  }
+
+  /**
+   * @param UserAccessInterface $user
+   */
+  public function setUser($user)
+  {
+    $this->_user = $user;
   }
 
 }
