@@ -9,6 +9,11 @@ class TestComment implements ObjectInterface
     private $object_roles = [];
     private $related_object = [];
 
+    public function getObjectIdentifier()
+    {
+        return "comment";
+    }
+
     public function __construct(array $object_roles, array $related_object)
     {
         $this->object_roles = $object_roles;
