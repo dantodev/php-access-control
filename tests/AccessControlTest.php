@@ -71,4 +71,30 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->judge->hasRole("creator", $comment));
     }
 
+    public function testCheckRight()
+    {
+        $this->judge->hasRight("access"); // thats it, alright until exception appears here
+    }
+
+    /**
+     * @expectedException \Dtkahl\AccessControl\NotAllowedException
+     */
+    public function testExceptionRight()
+    {
+        $this->judge->checkRight("destroy");
+    }
+
+    public function testCheckRole()
+    {
+        $this->judge->checkRole("member"); // thats it, alright until exception appears here
+    }
+
+    /**
+     * @expectedException \Dtkahl\AccessControl\NotAllowedException
+     */
+    public function testExceptionRole()
+    {
+        $this->judge->checkRole("master");
+    }
+
 }
