@@ -61,7 +61,11 @@ class Judge
             if (is_null($object)) {
                 $this->checkRightInRoles($rights, $user_roles);
             } else {
-                $this->checkRightForObject($rights, $object, $user, $user_roles);
+                $access_object = $this->getAccessObject($object);
+                // check global roles related rights
+                $this->checkRightInRoles($rights, $user_roles, $access_object);
+                // check object rights
+                $this->checkRightForObject($rights, $object, $user, $access_object);
             }
         } catch (AllowedException $allowedException) {
             return; // Alright, please do not look behind. Everything is fine. Just walk on.
@@ -69,25 +73,32 @@ class Judge
         throw new NotAllowedException;
     }
 
-    private function checkRightForObject($rights, ObjectInterface $object, UserAccessInterface $user, Map $user_roles)
+    private function checkRightForObject($rights, ObjectInterface $object, UserAccessInterface $user, AccessObject $original_access_object)
+    {
+        $access_object = $this->getAccessObject($object);
+
+        $object_roles = $access_object->getRoles()->only($object->getObjectRoles($user));
+        $this->checkRightInRoles($rights, $object_roles, $original_access_object);
+
+        // do the same for all related objects
+        $related_objects = $this->hydrateRelatedObjects($object);
+        $related_objects->each(function ($identifier, ObjectInterface $object) use ($rights, $user, $original_access_object) {
+            $this->checkRightForObject($rights, $object, $user, $original_access_object);
+        });
+    }
+
+    /**
+     * @param ObjectInterface $object
+     * @throws \InvalidArgumentException
+     * @return AccessObject
+     */
+    private function getAccessObject(ObjectInterface $object)
     {
         $access_object = $this->objects->get($object->getObjectIdentifier());
         if (!$access_object instanceof AccessObject) {
             throw new \InvalidArgumentException("The given object is not registered");
         }
-
-        // check global roles related rights
-        $this->checkRightInRoles($rights, $user_roles, $access_object);
-
-        // check object roles related rights
-        $object_roles = $access_object->getRoles()->only($object->getObjectRoles($user));
-        $this->checkRightInRoles($rights, $object_roles, $access_object);
-
-        // finally check related object roles related rights
-        $related_objects = $this->hydrateRelatedObjects($object);
-        $related_objects->each(function ($identifier, ObjectInterface $object) use ($rights, $user, $user_roles) {
-            $this->checkRightForObject($rights, $object, $user, $user_roles);
-        });
+        return $access_object;
     }
 
     private function hydrateRelatedObjects(ObjectInterface $object)
@@ -106,9 +117,7 @@ class Judge
     private function checkRightInRoles($rights, Map $roles, AccessObject $access_object = null)
     {
         $roles->each(function ($identifier, AccessRole $role) use ($rights, $access_object) {
-            if ($role->hasRight($rights, $access_object)) {
-                throw new AllowedException;
-            }
+            $role->checkRight($rights, $access_object);
         });
     }
 
