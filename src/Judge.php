@@ -13,7 +13,7 @@ class Judge
      * @param AccessObject[] $objects
      * @param UserAccessInterface|null $user
      */
-    public function __construct(array $global_roles, array $objects, UserAccessInterface $user)
+    public function __construct(array $global_roles, array $objects, UserAccessInterface $user = null)
     {
         $this->global_roles = new Map();
         $this->objects = new Map();
@@ -55,6 +55,11 @@ class Judge
     {
         $rights = (array)$rights;
         $user = $user ?: $this->user;
+
+        if (!$user instanceof UserAccessInterface) {
+            throw new \InvalidArgumentException("No user for right check");
+        }
+
         $user_roles = $this->global_roles->only($user->getGlobalRoles());
 
         try {
@@ -147,6 +152,11 @@ class Judge
     public function checkRole($role, ObjectInterface $object = null, UserAccessInterface $user = null)
     {
         $user = $user ?: $this->user;
+
+        if (!$user instanceof UserAccessInterface) {
+            throw new \InvalidArgumentException("No user for right check");
+        }
+
         $user_roles = $this->global_roles->only($user->getGlobalRoles());
 
         try {
