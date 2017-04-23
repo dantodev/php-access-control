@@ -20,13 +20,13 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
             "blog" => ["view", "create"]
         ]);
 
-        $role_author = new AccessRole("author", [], [
-            "blog" => ["remove", "edit"],
-            "comment" => ["write", "remove"] // TODO extend subscriber + test extended
-        ]);
         $role_subscriber = new AccessRole("subscriber", [], [
             "comment" => ["write"]
         ]);
+        $role_author = new AccessRole("author", [], [
+            "blog" => ["remove", "edit"],
+            "comment" => ["remove"]
+        ], $role_subscriber);
         $role_creator = new AccessRole("creator", [], [
             "comment" => ["edit", "remove"]
         ]);
@@ -50,8 +50,8 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->judge->hasRight(["access", "test"])); // positive multiple rights
         $this->assertTrue($this->judge->hasRight("create", $blog)); // positive object right
         $this->assertTrue($this->judge->hasRight("edit", $blog)); // positive object related right
-        $this->assertTrue($this->judge->hasRight("write", $comment)); // positive related object right
         $this->assertTrue($this->judge->hasRight("remove", $comment)); // positive related object right
+        $this->assertTrue($this->judge->hasRight("write", $comment)); // positive related object right from extended role
         $this->assertTrue($this->judge->hasRight("remove", $comment2)); // positive related object right recursive
         $this->assertTrue($this->judge->hasRight("edit", $comment3)); // some more test
         $this->assertFalse($this->judge->hasRight("destroy")); // negative global right

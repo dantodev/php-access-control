@@ -12,9 +12,9 @@ class AccessRole
      * @param string $identifier
      * @param array $rights
      * @param array $object_rights
-     * @param null $extended_role
+     * @param AccessRole|null $extended_role
      */
-    public function __construct($identifier, array $rights, array $object_rights = [], $extended_role = null)
+    public function __construct($identifier, array $rights, array $object_rights = [], AccessRole $extended_role = null)
     {
         $this->identifier = $identifier;
         $this->rights = $rights;
@@ -35,7 +35,6 @@ class AccessRole
      * @param AccessObject|null $access_object
      * @throws AllowedException
      * @throws NotAllowedException
-     * @return bool
      */
     public function checkRight($rights, AccessObject $access_object = null)
     {
@@ -53,9 +52,10 @@ class AccessRole
             ) {
                 throw new AllowedException;
             }
+            if ($this->extended_role instanceof AccessRole) {
+                $this->extended_role->checkRight($rights, $access_object);
+            }
         }
-
-        // TODO check in $extended_role
     }
 
 }
