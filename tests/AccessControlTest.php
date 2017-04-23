@@ -46,8 +46,6 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
         $comment3 = new TestComment(["creator"], [$comment2]);
         $comment4 = new TestComment([], [$comment3]);
 
-        // TODO test NotAllowedException on checkRight and checkRole
-
         $this->assertTrue($this->judge->hasRight("access")); // positive global right
         $this->assertTrue($this->judge->hasRight(["access", "test"])); // positive multiple rights
         $this->assertTrue($this->judge->hasRight("create", $blog)); // positive object right
