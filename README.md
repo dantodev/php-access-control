@@ -10,6 +10,7 @@ This package provides an access control (right management) system based on user,
 ### User
 
 The main reason of this package is to prove whether the user has a specific right or not.
+
 A user can have a right on different ways:
 
 - through a global role
@@ -23,6 +24,7 @@ A role is a defined set of rights and can extend another existing role. Roles ca
 ### Objects
 
 An user can have a specific role for a specific object. As example: The User "John" has the role "author" on the object "BlogPost".
+
 A object can be any class that implements `ObjectInterface`. As example it could be the Eloquent model class `BlogPost`.
 
 
@@ -39,6 +41,7 @@ composer require dtkahl/php-array-tools
 ### create User(s)
 
 This is not really a big deal. You just need a class that implements the `UserAccessInterface`. 
+
 This requires you to implement one method:
 
 - `getGlobalRoles` - Returns an array of role names (strings) you want your user to have. The way you store this information is completely up to you.
@@ -47,6 +50,7 @@ This requires you to implement one method:
 ### create Objects
 
 This is a step you can skip if you only want to implement global rights. If you wan to have object roles and rights you have to implement the `ObjectInterface` in your objects class.
+
 This requires three methods:
 
 - `getObjectIdentifier` - Returns an identifier as string. This is used to find the right rights in the later defined roles
@@ -103,6 +107,7 @@ $judge = new Judge(
 ## The Judge class
 
 This is the main class to check rights or roles. You normally want let your dependency container to return a instance of this class.
+
 It has the following public methods:
 
 ### `registerRole($role)`
@@ -120,6 +125,7 @@ Set the default user for the Judge instance.
 ### `checkRight($rights, $object = null, $user = null)`
 
 Throws `NotAllowedException` if the user do not have the given right(s).
+
 If given object is null it only checks global rights.
 If given user is null it uses the default user.
 
@@ -136,6 +142,7 @@ This is a proxy for `checkRights()` but instead of throwing an exception it only
 ### `checkRole`
 
 Throws `NotALlowedException` if the user do not have the given role.
+
 If given object is null it only checks global roles.
 If given user is null it uses the default user.
 
