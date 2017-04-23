@@ -20,7 +20,7 @@ class TestComment implements ObjectInterface
         $this->related_object = $related_object;
     }
 
-    public function getObjectRoles(UserAccessInterface $user)
+    public function getUserRoles(UserAccessInterface $user)
     {
         return $this->object_roles;
     }

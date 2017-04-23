@@ -17,7 +17,7 @@ interface ObjectInterface
      * @param UserAccessInterface $user
      * @return string[]
      */
-    public function getObjectRoles(UserAccessInterface $user);
+    public function getUserRoles(UserAccessInterface $user);
 
     /**
      * Returns an array of relevant objects related to this object instance.

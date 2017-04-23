@@ -82,7 +82,7 @@ class Judge
     {
         $access_object = $this->getAccessObject($object);
 
-        $object_roles = $access_object->getRoles()->only($object->getObjectRoles($user));
+        $object_roles = $access_object->getRoles()->only($object->getUserRoles($user));
         $this->checkRightInRoles($rights, $object_roles, $original_access_object);
 
         // do the same for all related objects
@@ -179,7 +179,7 @@ class Judge
         }
 
         // check object roles related rights
-        $object_roles = $access_object->getRoles()->only($object->getObjectRoles($user));
+        $object_roles = $access_object->getRoles()->only($object->getUserRoles($user));
         $this->checkRoleInRoles($role, $object_roles);
 
         // finally check related object roles related rights
