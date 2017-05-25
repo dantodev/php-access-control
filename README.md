@@ -148,6 +148,7 @@ Throws `NotALlowedException` if the user do not have the given role.
 
 If given object is null it only checks global roles.
 If given user is null it uses the default user.
+If parameter `check_extend_roles` is true (default: false) the given role is also checked against the extend roles of the roles the user has. (see issue #9)
 
 **Example:**
 ```php

@@ -61,4 +61,9 @@ class AccessRole
         }
     }
 
+    public function getExtendedRole()
+    {
+        return $this->extended_role;
+    }
+
 }

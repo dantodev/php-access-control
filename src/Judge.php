@@ -146,10 +146,11 @@ class Judge
      * @param string $role
      * @param ObjectInterface|null $object
      * @param UserAccessInterface|null $user
+     * @param bool $check_extend_roles
      * @throws NotAllowedException
      * @return void
      */
-    public function checkRole($role, ObjectInterface $object = null, UserAccessInterface $user = null)
+    public function checkRole($role, ObjectInterface $object = null, UserAccessInterface $user = null, $check_extend_roles = false)
     {
         $user = $user ?: $this->user;
 
@@ -161,9 +162,9 @@ class Judge
 
         try {
             if (is_null($object)) {
-                $this->checkRoleInRoles($role, $user_roles);
+                $this->checkRoleInRoles($role, $user_roles, $check_extend_roles);
             } else {
-                $this->checkRoleForObject($role, $object, $user);
+                $this->checkRoleForObject($role, $object, $user, $check_extend_roles);
             }
         } catch (AllowedException $exception) {
             return; // same story like above, do not turn your head around sweaty
@@ -171,7 +172,7 @@ class Judge
         throw new NotAllowedException;
     }
 
-    private function checkRoleForObject($role, ObjectInterface $object, UserAccessInterface $user)
+    private function checkRoleForObject($role, ObjectInterface $object, UserAccessInterface $user, $check_extend_roles)
     {
         $access_object = $this->objects->get($object->getObjectIdentifier());
         if (!$access_object instanceof AccessObject) {
@@ -180,19 +181,29 @@ class Judge
 
         // check object roles related rights
         $object_roles = $access_object->getRoles()->only($object->getUserRoles($user));
-        $this->checkRoleInRoles($role, $object_roles);
+        $this->checkRoleInRoles($role, $object_roles, $check_extend_roles);
 
         // finally check related object roles related rights
         $related_objects = $this->hydrateRelatedObjects($object);
-        $related_objects->each(function ($identifier, ObjectInterface $object) use ($role, $user) {
-            $this->checkRoleForObject($role, $object, $user);
+        $related_objects->each(function ($identifier, ObjectInterface $object) use ($role, $user, $check_extend_roles) {
+            $this->checkRoleForObject($role, $object, $user, $check_extend_roles);
         });
     }
 
-    private function checkRoleInRoles($role, Map $roles)
+    private function checkRoleInRoles($check_role, Map $roles, $check_extend_roles)
     {
-        if ($roles->has($role)) {
+        if ($roles->has($check_role)) {
             throw new AllowedException;
+        }
+        if ($check_extend_roles) {
+            $roles->each(function ($i, AccessRole $role) use ($check_role) {
+                while ($extended_role = $role->getExtendedRole()) {
+                    if ($extended_role->getIdentifier() == $check_role) {
+                        throw new AllowedException;
+                    }
+                    $role = $extended_role;
+                }
+            });
         }
     }
 
@@ -200,12 +211,13 @@ class Judge
      * @param string $role
      * @param ObjectInterface|null $object
      * @param UserAccessInterface|null $user
+     * @param bool $check_extend_roles
      * @return bool
      */
-    public function hasRole($role, ObjectInterface $object = null, UserAccessInterface $user = null)
+    public function hasRole($role, ObjectInterface $object = null, UserAccessInterface $user = null, $check_extend_roles = false)
     {
         try {
-            $this->checkRole($role, $object, $user);
+            $this->checkRole($role, $object, $user, $check_extend_roles);
         } catch (NotAllowedException $exception) {
             return false;
         }

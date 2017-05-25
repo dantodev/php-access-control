@@ -67,6 +67,7 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->judge->hasRole("member"));
         $this->assertTrue($this->judge->hasRole("author", $blog));
+        $this->assertTrue($this->judge->hasRole("subscriber", $blog, null, true)); // check extended role
         $this->assertTrue($this->judge->hasRole("creator", $comment3));
         $this->assertTrue($this->judge->hasRole("creator", $comment4)); // inheritance
         $this->assertFalse($this->judge->hasRole("admin"));
