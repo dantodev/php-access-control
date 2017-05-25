@@ -16,18 +16,22 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
     {
         $user = new TestUser(["member"]);
 
-        $role_member = new AccessRole("member", ["access", "test"], [
+        $role_member = new AccessRole("member", [
+            "access",
+            "test",
             "blog" => ["view", "create"]
         ]);
 
-        $role_subscriber = new AccessRole("subscriber", [], [
+        $role_subscriber = new AccessRole("subscriber", [
             "comment" => ["write"]
         ]);
-        $role_author = new AccessRole("author", [], [
+
+        $role_author = new AccessRole("author", [
             "blog" => ["remove", "edit"],
             "comment" => ["remove"]
         ], $role_subscriber);
-        $role_creator = new AccessRole("creator", [], [
+
+        $role_creator = new AccessRole("creator", [
             "comment" => ["edit", "remove"]
         ]);
 
@@ -48,18 +52,18 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->judge->hasRight("access")); // positive global right
         $this->assertTrue($this->judge->hasRight(["access", "test"])); // positive multiple rights
-        $this->assertTrue($this->judge->hasRight("create", $blog)); // positive object right
-        $this->assertTrue($this->judge->hasRight("edit", $blog)); // positive object related right
-        $this->assertTrue($this->judge->hasRight("remove", $comment)); // positive related object right
-        $this->assertTrue($this->judge->hasRight("write", $comment)); // positive related object right from extended role
-        $this->assertTrue($this->judge->hasRight("remove", $comment2)); // positive related object right recursive
-        $this->assertTrue($this->judge->hasRight("edit", $comment3)); // some more test
+        $this->assertTrue($this->judge->hasRight("blog.create", $blog)); // positive object right
+        $this->assertTrue($this->judge->hasRight("blog.edit", $blog)); // positive object related right
+        $this->assertTrue($this->judge->hasRight("comment.remove", $comment)); // positive related object right
+        $this->assertTrue($this->judge->hasRight("comment.write", $comment)); // positive related object right from extended role
+        $this->assertTrue($this->judge->hasRight("comment.remove", $comment2)); // positive related object right recursive
+        $this->assertTrue($this->judge->hasRight("comment.edit", $comment3)); // some more test
         $this->assertFalse($this->judge->hasRight("destroy")); // negative global right
         $this->assertFalse($this->judge->hasRight(["access", "destroy"])); // negative multiple rights
-        $this->assertFalse($this->judge->hasRight("destroy", $blog)); // negative object right
-        $this->assertFalse($this->judge->hasRight("destroy", $comment)); // negative related object right
-        $this->assertFalse($this->judge->hasRight("edit", $blog2)); // negative whithout role
-        $this->assertFalse($this->judge->hasRight("destroy", $comment)); // negative related object right
+        $this->assertFalse($this->judge->hasRight("blog.destroy", $blog)); // negative object right
+        $this->assertFalse($this->judge->hasRight("comment.destroy", $comment)); // negative related object right
+        $this->assertFalse($this->judge->hasRight("blog.edit", $blog2)); // negative without role
+        $this->assertFalse($this->judge->hasRight("comment.destroy", $comment)); // negative related object right
 
         $this->assertTrue($this->judge->hasRole("member"));
         $this->assertTrue($this->judge->hasRole("author", $blog));

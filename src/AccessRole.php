@@ -4,22 +4,34 @@ class AccessRole
 {
     private $identifier;
     private $rights = [];
-    private $object_rights = [];
     private $extended_role;
 
     /**
      * AccessRole constructor.
      * @param string $identifier
      * @param array $rights
-     * @param array $object_rights
      * @param AccessRole|null $extended_role
      */
-    public function __construct($identifier, array $rights, array $object_rights = [], AccessRole $extended_role = null)
+    public function __construct($identifier, array $rights, AccessRole $extended_role = null)
     {
         $this->identifier = $identifier;
-        $this->rights = $rights;
-        $this->object_rights = $object_rights;
+        $this->rights = $this->prepareRights($rights);
         $this->extended_role = $extended_role;
+    }
+
+    private function prepareRights($rights)
+    {
+        $prepared = [];
+        foreach ($rights as $key=>$value) {
+            if (is_array($value)) {
+                foreach ($value as $item) {
+                    $prepared[] = "$key.$item";
+                }
+            } else {
+                $prepared[] = $value;
+            }
+        }
+        return $prepared;
     }
 
     /**
@@ -40,18 +52,11 @@ class AccessRole
     {
         $rights = (array) $rights;
 
-        if (is_null($access_object)) {
-            if (count(array_intersect($rights, $this->rights)) == count($rights)) {
-                throw new AllowedException;
-            }
-        } else {
-            $identifier = $access_object->getIdentifier();
-            if (
-                array_key_exists($identifier, $this->object_rights)
-                && count(array_intersect($rights, $this->object_rights[$identifier])) == count($rights)
-            ) {
-                throw new AllowedException;
-            }
+        if (count(array_intersect($rights, $this->rights)) == count($rights)) {
+            throw new AllowedException;
+        }
+
+        if (!is_null($access_object)) {
             if ($this->extended_role instanceof AccessRole) {
                 $this->extended_role->checkRight($rights, $access_object);
             }
