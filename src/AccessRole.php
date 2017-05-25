@@ -56,10 +56,8 @@ class AccessRole
             throw new AllowedException;
         }
 
-        if (!is_null($access_object)) {
-            if ($this->extended_role instanceof AccessRole) {
-                $this->extended_role->checkRight($rights, $access_object);
-            }
+        if ($this->extended_role instanceof AccessRole) {
+            $this->extended_role->checkRight($rights, $access_object);
         }
     }
 
