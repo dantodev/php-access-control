@@ -67,12 +67,15 @@ This could take place anywhere in your application but needs to be done before c
 ```php
 $role_member = new AccessRole(
     "member", // role name
-    ["access"],  // global rights as array
     [
-        "blog_post" => ["view", "create"] // rights related to a specific object as array (by object identifier)
+        "access",                           // rights as string
+        "blog_post.edit"                    // you can namespace rights with a dot, this is often used for object identifier
+        "blog_post" => ["view", "create"]   // instead of a dot you can also use an array to create namespaces
     ],
 );
 ```
+
+Namespaces are new with issue #10 and new release 2.0.0
 
 **Extending a role**
 
