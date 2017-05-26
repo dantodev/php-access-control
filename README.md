@@ -125,6 +125,10 @@ Register a new object for the Judge instance.
 
 Set the default user for the Judge instance.
 
+### `getUser()`
+
+Return the default user of the Judge instance.
+
 ### `checkRight($rights, $object = null, $user = null)`
 
 Throws `NotAllowedException` if the user do not have the given right(s).
