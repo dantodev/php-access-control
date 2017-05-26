@@ -232,4 +232,12 @@ class Judge
         $this->user = $user;
     }
 
+    /**
+     * @return UserAccessInterface|null
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
 }
