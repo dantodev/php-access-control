@@ -100,4 +100,11 @@ class AccessControlTest extends \PHPUnit_Framework_TestCase
         $this->judge->checkRole("master");
     }
 
+    public function testGetSetUser()
+    {
+        $this->assertEquals(get_class($this->judge->getUser()), TestUser::class);
+        $this->judge->setUser(null);
+        $this->assertNull($this->judge->getUser());
+    }
+
 }
